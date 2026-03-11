@@ -1,1 +1,96 @@
-/* You can add global styles to this file, and also import other style files */
+@import '@shoelace-style/shoelace/dist/themes/light.css';
+@import '@shoelace-style/shoelace/dist/themes/dark.css';
+
+/* oxanium-200 - latin */
+@font-face {
+  font-display: swap;
+  font-family: 'Oxanium';
+  font-style: normal;
+  font-weight: 200;
+  src: url('/fonts/oxanium-v21-latin-200.woff2') format('woff2');
+}
+
+/* oxanium-300 - latin */
+@font-face {
+  font-display: swap;
+  font-family: 'Oxanium';
+  font-style: normal;
+  font-weight: 300;
+  src: url('/fonts/oxanium-v21-latin-300.woff2') format('woff2');
+}
+
+/* oxanium-regular - latin */
+@font-face {
+  font-display: swap;
+  font-family: 'Oxanium';
+  font-style: normal;
+  font-weight: 400;
+  src: url('/fonts/oxanium-v21-latin-regular.woff2') format('woff2');
+}
+
+/* oxanium-500 - latin */
+@font-face {
+  font-display: swap;
+  font-family: 'Oxanium';
+  font-style: normal;
+  font-weight: 500;
+  src: url('/fonts/oxanium-v21-latin-500.woff2') format('woff2');
+}
+
+/* oxanium-600 - latin */
+@font-face {
+  font-display: swap;
+  font-family: 'Oxanium';
+  font-style: normal;
+  font-weight: 600;
+  src: url('/fonts/oxanium-v21-latin-600.woff2') format('woff2');
+}
+
+/* oxanium-700 - latin */
+@font-face {
+  font-display: swap;
+  font-family: 'Oxanium';
+  font-style: normal;
+  font-weight: 700;
+  src: url('/fonts/oxanium-v21-latin-700.woff2') format('woff2');
+}
+
+/* oxanium-800 - latin */
+@font-face {
+  font-display: swap;
+  font-family: 'Oxanium';
+  font-style: normal;
+  font-weight: 800;
+  src: url('/fonts/oxanium-v21-latin-800.woff2') format('woff2');
+}
+
+/* sixtyfour-regular - latin */
+@font-face {
+  font-display: swap;
+  font-family: 'Sixtyfour';
+  font-style: normal;
+  font-weight: 400;
+  src: url('/fonts/sixtyfour-v3-latin-regular.woff2') format('woff2');
+}
+
+:root {
+  --sl-font-sans: 'Oxanium', Arial, sans-serif;
+}
+
+body {
+  background: linear-gradient(
+    0deg,
+    var(--sl-panel-background-color) 0%,
+    var(--sl-color-neutral-300) 60%,
+    var(--sl-panel-background-color) 100%
+  );
+  color: var(--sl-color-neutral-900);
+  font-family: var(--sl-font-sans);
+  min-height: 100vh;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}

@@ -1,0 +1,109 @@
+<nav class="transport-toolbar">
+  <ul class="transport-toolbar__list">
+    <li class="transport-toolbar__item">
+      <sl-button
+        class="transport-toolbar__button transport-toolbar__button--play"
+        (click)="play()"
+      >
+        <sl-icon
+          class="transport-toolbar__icon transport-toolbar__icon--play"
+          label="{{ ('components.transportToolbar.play' | translate)() }}"
+          library="custom"
+          name="tabler.play"
+        ></sl-icon>
+      </sl-button>
+    </li>
+    <li class="transport-toolbar__item">
+      <sl-button
+        class="transport-toolbar__button transport-toolbar__button--pause"
+        (click)="pause()"
+      >
+        <sl-icon
+          class="transport-toolbar__icon transport-toolbar__icon--pause"
+          label="{{ ('components.transportToolbar.pause' | translate)() }}"
+          library="custom"
+          name="tabler.pause"
+        ></sl-icon>
+      </sl-button>
+    </li>
+    <li class="transport-toolbar__item">
+      <sl-button
+        class="transport-toolbar__button transport-toolbar__button--stop"
+        (click)="stop()"
+      >
+        <sl-icon
+          class="transport-toolbar__icon transport-toolbar__icon--stop"
+          label="{{ ('components.transportToolbar.stop' | translate)() }}"
+          library="custom"
+          name="tabler.stop"
+        ></sl-icon>
+      </sl-button>
+    </li>
+    <li class="transport-toolbar__item">
+      <sl-button
+        class="transport-toolbar__button transport-toolbar__button--open-dialog"
+        (click)="dialogRef.show()"
+      >
+        <sl-icon
+          class="transport-toolbar__icon transport-toolbar__icon--download"
+          label="{{ ('components.transportToolbar.download' | translate)() }}"
+          library="custom"
+          name="tabler.download"
+        ></sl-icon>
+      </sl-button>
+    </li>
+  </ul>
+</nav>
+
+<sl-dialog
+  #dialogRef
+  label="{{ ('components.transportToolbar.dialog.label' | translate)() }}"
+  class="transport-toolbar__dialog"
+>
+  <p class="transport-toolbar__dialog__content">
+    {{ ('components.transportToolbar.dialog.content' | translate)() }}
+  </p>
+  <div class="transport-toolbar__dialog__form">
+    <sl-input
+      #minuteRef
+      class="transport-toolbar__dialog__minutes"
+      type="number"
+      min="0"
+      value="0"
+      size="small"
+    ></sl-input>
+    :
+    <sl-input
+      #secondsRef
+      class="transport-toolbar__dialog__seconds"
+      type="number"
+      min="0"
+      max="59"
+      value="0"
+      size="small"
+    ></sl-input>
+  </div>
+  <div slot="footer" class="transport-toolbar__dialog__footer">
+    <sl-button
+      class="transport-toolbar__button transport-toolbar__button--close"
+      (click)="dialogRef.hide()"
+      >{{
+        ('components.transportToolbar.dialog.close' | translate)()
+      }}</sl-button
+    >
+    <sl-button
+      class="transport-toolbar__button transport-toolbar__button--download"
+      variant="primary"
+      (click)="
+        download(
+          minuteRef.value,
+          secondsRef.value,
+          dialogRef.hide.bind(dialogRef)
+        )
+      "
+      >{{
+        ('components.transportToolbar.dialog.download' | translate)()
+      }}</sl-button
+    >
+  </div>
+</sl-dialog>

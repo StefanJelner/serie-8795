@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ES2022",
+    "lib": ["ES2022"],
+    "strict": true,
+    "isolatedModules": true,
+    "moduleResolution": "bundler",
+    "rootDir": "src/app",
+    "outDir": "public",
+    "types": []
+  },
+  "include": ["src/app/worklets/**/*.ts"]
+}

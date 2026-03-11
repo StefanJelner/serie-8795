@@ -40,3 +40,10 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+# Worklets in public folder
+/public/models
+/public/worklets
+
+# Generated icon service
+/src/app/services/icon/icon-service.ts

@@ -1,0 +1,23 @@
+:host {
+  display: flex;
+}
+
+.note-selector {
+  display: flex;
+  flex-direction: column;
+  max-width: 4.375rem;
+
+  sl-select::part(expand-icon) {
+    display: none;
+  }
+
+  sl-option {
+    &::part(base) {
+      padding-right: var(--sl-spacing-x-small);
+    }
+
+    &::part(checked-icon) {
+      display: none;
+    }
+  }
+}

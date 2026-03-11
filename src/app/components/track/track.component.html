@@ -1,0 +1,33 @@
+<div class="track">
+  <section class="track__section track__section--active">
+    <sl-checkbox
+      [attr.checked]="track().active ? 'checked' : null"
+      size="small"
+      >{{ ('components.track.active' | translate)() }}</sl-checkbox
+    >
+    <sl-checkbox
+      [attr.checked]="track().solo ? 'checked' : null"
+      size="small"
+      >{{ ('components.track.solo' | translate)() }}</sl-checkbox
+    >
+    <sl-checkbox
+      [attr.checked]="track().mute ? 'checked' : null"
+      size="small"
+      >{{ ('components.track.mute' | translate)() }}</sl-checkbox
+    >
+  </section>
+  <section class="track__section track__section--steps">
+    <h1 class="track__title">
+      {{ ('components.track.steps.label' | translate)() }}
+    </h1>
+    <ul class="track__steps">
+      @for (note of track().notes; let j = $index; track j) {
+        <li class="track__step">
+          <app-note-selector
+            (noteChange)="updateNote(number(), j, $event)"
+          ></app-note-selector>
+        </li>
+      }
+    </ul>
+  </section>
+</div>

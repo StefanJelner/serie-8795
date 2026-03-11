@@ -1,0 +1,92 @@
+{
+  "en": {
+    "translation": {
+      "components": {
+        "barsSelector": {
+          "label": "Bars"
+        },
+        "track": {
+          "active": "Active",
+          "mute": "Mute",
+          "solo": "Solo",
+          "steps": {
+            "label": "Steps (Octave, Semitone, Velocity, Duration)"
+          }
+        },
+        "transportToolbar": {
+          "dialog": {
+            "close": "Close",
+            "content": "How many minutes and seconds do you want to export and download?",
+            "download": "Download",
+            "label": "Download"
+          },
+          "download": "Download",
+          "pause": "Pause",
+          "play": "Play",
+          "stop": "Stop"
+        }
+      },
+      "direction": "ltr",
+      "locale": {
+        "label": "Language"
+      },
+      "services": {
+        "midiDownload": {
+          "filetypeDescription": "MIDI File"
+        }
+      },
+      "theme": {
+        "dark": "Dark",
+        "label": "Theme",
+        "light": "Light"
+      },
+      "title": "Serie 8795",
+      "windowTitle": "Serie 8795 - Polyrhythmic Generative Sequencer"
+    }
+  },
+  "de": {
+    "translation": {
+      "components": {
+        "barsSelector": {
+          "label": "Takt"
+        },
+        "track": {
+          "active": "Aktiv",
+          "mute": "Stumm",
+          "solo": "Solo",
+          "steps": {
+            "label": "Schritte (Oktave, Halbton, Anschlagstärke, Dauer)"
+          }
+        },
+        "transportToolbar": {
+          "dialog": {
+            "close": "Schließen",
+            "content": "Wie viele Minuten und Sekunden möchten Sie exportieren und herunterladen?",
+            "download": "Herunterladen",
+            "label": "Herunterladen"
+          },
+          "download": "Herunterladen",
+          "pause": "Pause",
+          "play": "Abspielen",
+          "stop": "Stopp"
+        }
+      },
+      "direction": "ltr",
+      "locale": {
+        "label": "Sprache"
+      },
+      "services": {
+        "midiDownload": {
+          "filetypeDescription": "MIDI Datei"
+        }
+      },
+      "theme": {
+        "dark": "Dunkel",
+        "label": "Thema",
+        "light": "Hell"
+      },
+      "title": "Serie 8795",
+      "windowTitle": "Serie 8795 - Polyrhythmischer Generativer Sequencer"
+    }
+  }
+}

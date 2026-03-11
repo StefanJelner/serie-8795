@@ -1,0 +1,35 @@
+<main class="sequencer">
+  <header class="sequencer__header">
+    <sl-input
+      #bpmRef
+      class="sequencer__bpm"
+      type="number"
+      label="BPM"
+      min="{{ TimingService.MIN_BPM }}"
+      max="{{ TimingService.MAX_BPM }}"
+      value="{{ (bpm$ | async) ?? TimingService.DEFAULT_BPM }}"
+      size="small"
+      (sl-change)="updateBpm($any(bpmRef.value))"
+    ></sl-input>
+    <app-bars-selector
+      class="sequencer__bars"
+      [base]="(bars$ | async)?.base ?? TimingService.DEFAULT_BASE"
+      [value]="(bars$ | async)?.value ?? TimingService.DEFAULT_VALUE"
+      (barsChange)="updateBars($any($event))"
+    ></app-bars-selector>
+  </header>
+  <section class="sequencer__tracks">
+    @for (track of tracks$ | async; let i = $index; track i) {
+      <app-track
+        class="sequencer__track"
+        [number]="i"
+        [track]="track"
+      ></app-track>
+    }
+  </section>
+  <footer class="sequencer__footer">
+    <app-transport-toolbar
+      class="sequencer__transport-toolbar"
+    ></app-transport-toolbar>
+  </footer>
+</main>

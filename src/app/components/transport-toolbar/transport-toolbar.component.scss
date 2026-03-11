@@ -1,0 +1,47 @@
+.transport-toolbar {
+  background: linear-gradient(
+    0deg,
+    var(--sl-panel-background-color) 0%,
+    var(--sl-color-neutral-300) 60%,
+    var(--sl-panel-background-color) 100%
+  );
+  border: 0.0625rem solid var(--sl-color-neutral-400);
+  border-radius: 1rem;
+  bottom: 1rem;
+  left: 50%;
+  padding: 1rem;
+  position: fixed;
+  transform: translateX(-50%);
+  z-index: 1;
+
+  &__list {
+    display: flex;
+    gap: 1rem;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  &__dialog {
+    &__content {
+      margin-bottom: 1rem;
+    }
+
+    &__form {
+      align-items: center;
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+
+      sl-input {
+        width: 5rem;
+      }
+    }
+
+    &__footer {
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+    }
+  }
+}

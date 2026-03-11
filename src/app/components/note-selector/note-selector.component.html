@@ -1,0 +1,26 @@
+<div class="note-selector">
+  <sl-select
+    #octaveRef
+    value="{{ octave() ?? '' }}"
+    size="small"
+    (sl-change)="setOctave($any(octaveRef.value))"
+  >
+    <sl-option value=""></sl-option>
+    @for (o of octaves; track o) {
+      <sl-option [value]="o">{{ o }}</sl-option>
+    }
+  </sl-select>
+  <sl-select
+    #semitoneRef
+    value="{{ semitone() ?? '' }}"
+    size="small"
+    (sl-change)="setSemitone($any(semitoneRef.value))"
+  >
+    <sl-option value=""></sl-option>
+    @for (s of semitones; let i = $index; track i) {
+      <sl-option [value]="i" [disabled]="octave() === 9 && i > 7">{{
+        s
+      }}</sl-option>
+    }
+  </sl-select>
+</div>
