@@ -4,9 +4,9 @@
     class="bars-selector__value"
     [label]="('components.barsSelector.label' | translate)()"
     type="number"
-    min="{{ TimingService.MIN_BARS }}"
-    max="{{ TimingService.MAX_BARS }}"
-    value="{{ value() }}"
+    [min]="minBars"
+    [max]="maxBars"
+    [value]="value()"
     size="small"
     (sl-change)="setValue($any(valueRef.value))"
   ></sl-input>
@@ -15,9 +15,9 @@
     #baseRef
     class="bars-selector__base"
     type="number"
-    min="{{ TimingService.MIN_BARS }}"
-    max="{{ TimingService.MAX_BARS }}"
-    value="{{ base() }}"
+    [min]="minBars"
+    [max]="maxBars"
+    [value]="base()"
     size="small"
     (sl-change)="setBase($any(baseRef.value))"
   ></sl-input>

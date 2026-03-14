@@ -7,7 +7,7 @@
       >
         <sl-icon
           class="transport-toolbar__icon transport-toolbar__icon--play"
-          label="{{ ('components.transportToolbar.play' | translate)() }}"
+          [label]="'components.transportToolbar.play' | translate"
           library="custom"
           name="tabler.play"
         ></sl-icon>
@@ -20,7 +20,7 @@
       >
         <sl-icon
           class="transport-toolbar__icon transport-toolbar__icon--pause"
-          label="{{ ('components.transportToolbar.pause' | translate)() }}"
+          [label]="'components.transportToolbar.pause' | translate"
           library="custom"
           name="tabler.pause"
         ></sl-icon>
@@ -33,7 +33,7 @@
       >
         <sl-icon
           class="transport-toolbar__icon transport-toolbar__icon--stop"
-          label="{{ ('components.transportToolbar.stop' | translate)() }}"
+          [label]="'components.transportToolbar.stop' | translate"
           library="custom"
           name="tabler.stop"
         ></sl-icon>
@@ -46,7 +46,7 @@
       >
         <sl-icon
           class="transport-toolbar__icon transport-toolbar__icon--download"
-          label="{{ ('components.transportToolbar.download' | translate)() }}"
+          [label]="'components.transportToolbar.download' | translate"
           library="custom"
           name="tabler.download"
         ></sl-icon>
@@ -57,7 +57,7 @@
 
 <sl-dialog
   #dialogRef
-  label="{{ ('components.transportToolbar.dialog.label' | translate)() }}"
+  [label]="'components.transportToolbar.dialog.label' | translate"
   class="transport-toolbar__dialog"
 >
   <p class="transport-toolbar__dialog__content">

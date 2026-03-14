@@ -2,26 +2,28 @@ import {
   Component,
   CUSTOM_ELEMENTS_SCHEMA,
   effect,
-  output,
+  inject,
   signal,
 } from '@angular/core';
-import { Bars } from '../../models/scheduler.models';
-import { TranslatePipe } from '../../pipes/translate.pipe';
+import { DEFAULT_IMPORTS } from '../../default-imports';
+import { SchedulerService } from '../../services/scheduler/scheduler.service';
 import { TimingService } from '../../services/timing/timing.service';
 
 @Component({
   selector: 'app-bars-selector',
-  imports: [TranslatePipe],
+  imports: [...DEFAULT_IMPORTS],
   templateUrl: './bars-selector.component.html',
-  styleUrl: './bars-selector.component.scss',
+  styleUrls: ['./bars-selector.component.scss'],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class BarsSelectorComponent {
-  public base = signal<number>(TimingService.DEFAULT_BASE);
-  public value = signal<number>(TimingService.DEFAULT_VALUE);
+  public readonly base = signal<number>(TimingService.DEFAULT_BASE);
+  public readonly value = signal<number>(TimingService.DEFAULT_VALUE);
+  public readonly minBars = TimingService.MIN_BARS;
+  public readonly maxBars = TimingService.MAX_BARS;
 
-  public readonly barsChange = output<Bars | null>();
-  public readonly TimingService = TimingService;
+  private readonly _schedulerService: SchedulerService =
+    inject(SchedulerService);
 
   constructor() {
     effect(() => {
@@ -29,12 +31,12 @@ export class BarsSelectorComponent {
       const value = this.value();
 
       if (base === null || value === null) {
-        this.barsChange.emit(null);
+        this._schedulerService.resetBars();
 
         return;
       }
 
-      this.barsChange.emit({ base, value });
+      this._schedulerService.setBars({ base, value });
     });
   }
 

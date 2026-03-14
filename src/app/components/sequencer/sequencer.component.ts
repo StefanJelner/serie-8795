@@ -1,7 +1,7 @@
-import { AsyncPipe, CommonModule } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { Component, CUSTOM_ELEMENTS_SCHEMA, inject } from '@angular/core';
+import { DEFAULT_IMPORTS } from '../../default-imports';
 import { Generators } from '../../generators/generators';
-import { Bars } from '../../models/scheduler.models';
 import { SchedulerService } from '../../services/scheduler/scheduler.service';
 import { TimingService } from '../../services/timing/timing.service';
 import { BarsSelectorComponent } from '../bars-selector/bars-selector.component';
@@ -11,7 +11,7 @@ import { TransportToolbarComponent } from '../transport-toolbar/transport-toolba
 @Component({
   selector: 'app-sequencer',
   imports: [
-    CommonModule,
+    ...DEFAULT_IMPORTS,
     AsyncPipe,
     BarsSelectorComponent,
     TrackComponent,
@@ -28,8 +28,11 @@ export class SequencerComponent {
   public readonly tracks$ = this._schedulerService.tracks$();
   public readonly bpm$ = this._schedulerService.bpm$();
   public readonly bars$ = this._schedulerService.bars$();
-
-  TimingService = TimingService;
+  public readonly minBpm = TimingService.MIN_BPM;
+  public readonly maxBpm = TimingService.MAX_BPM;
+  public readonly defaultBpm = TimingService.DEFAULT_BPM;
+  public readonly defaultBase = TimingService.DEFAULT_BASE;
+  public readonly defaultValue = TimingService.DEFAULT_VALUE;
 
   constructor() {
     console.log(Generators);
@@ -37,13 +40,5 @@ export class SequencerComponent {
 
   public updateBpm(bpm: number): void {
     this._schedulerService.setBpm(bpm);
-  }
-
-  public updateBars(bars: Bars | null): void {
-    if (bars === null) {
-      return;
-    }
-
-    this._schedulerService.setBars(bars);
   }
 }

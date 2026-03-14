@@ -3,9 +3,10 @@
   <header class="app__header">
     <sl-select
       #themeRef
+      i18nRefresh
       class="app__theme"
       [label]="('theme.label' | translate)()"
-      value="{{ theme() }}"
+      [value]="theme()"
       size="small"
       (sl-change)="onThemeChange($any(themeRef.value))"
     >
@@ -20,7 +21,7 @@
       #localeRef
       class="app__locale"
       [label]="('locale.label' | translate)()"
-      value="{{ locale() }}"
+      [value]="locale()"
       size="small"
       (sl-change)="onLocaleChange($any(localeRef.value))"
     >

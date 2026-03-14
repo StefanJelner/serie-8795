@@ -1,0 +1,36 @@
+@use '../../styles/mixins.scss';
+
+.duration-selector {
+  align-items: center;
+  display: flex;
+
+  &__button {
+    &--dialog {
+      anchor-name: var(--anchor);
+      width: 100%;
+    }
+  }
+
+  &__dialog {
+    @include mixins.popup;
+
+    max-width: 20rem;
+    position: {
+      anchor: var(--anchor);
+      area: bottom span-left;
+      try: bottom span-right;
+    }
+  }
+
+  &__form {
+    align-items: center;
+    display: flex;
+    gap: 1rem;
+  }
+
+  &__step,
+  &__numerator,
+  &__denominator {
+    width: 33%;
+  }
+}

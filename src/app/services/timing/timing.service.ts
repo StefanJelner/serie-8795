@@ -1,5 +1,9 @@
 import { BehaviorSubject, Observable } from 'rxjs';
-import { Bars } from '../../models/scheduler.models';
+
+export interface Bars {
+  base: number;
+  value: number;
+}
 
 export class TimingService {
   public static readonly DEFAULT_BPM = 120;
@@ -46,6 +50,13 @@ export class TimingService {
     }
 
     this._bars$.next(bars);
+  }
+
+  public resetBars(): void {
+    this._bars$.next({
+      base: TimingService.DEFAULT_BASE,
+      value: TimingService.DEFAULT_VALUE,
+    });
   }
 
   public getStepDuration(bpm: number, bars: Bars): number {

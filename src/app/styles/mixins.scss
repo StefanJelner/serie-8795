@@ -9,3 +9,11 @@
   border-radius: 1rem;
   padding: 1rem;
 }
+
+@mixin popup {
+  background: var(--sl-panel-background-color);
+  border: 0.0625rem solid var(--sl-color-neutral-400);
+  border-radius: 1rem;
+  overflow: visible;
+  padding: 1rem;
+}

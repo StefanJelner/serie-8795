@@ -1,7 +1,8 @@
 <div class="note-selector">
   <sl-select
     #octaveRef
-    value="{{ octave() ?? '' }}"
+    class="note-selector__octave"
+    [value]="octave() ?? ''"
     size="small"
     (sl-change)="setOctave($any(octaveRef.value))"
   >
@@ -12,15 +13,34 @@
   </sl-select>
   <sl-select
     #semitoneRef
-    value="{{ semitone() ?? '' }}"
+    class="note-selector__semitone"
+    [value]="semitone() ?? ''"
     size="small"
     (sl-change)="setSemitone($any(semitoneRef.value))"
   >
     <sl-option value=""></sl-option>
     @for (s of semitones; let i = $index; track i) {
-      <sl-option [value]="i" [disabled]="octave() === 9 && i > 7">{{
+      <sl-option [value]="i" [disabled]="octave() | maxSemitone: i">{{
         s
       }}</sl-option>
     }
   </sl-select>
+  <sl-input
+    #velocityRef
+    class="note-selector__velocity"
+    type="number"
+    size="small"
+    [value]="velocity()"
+    [min]="minVelocity"
+    [max]="maxVelocity"
+    (sl-change)="setVelocity($any(velocityRef.value))"
+  ></sl-input>
+  <app-duration-selector
+    class="note-selector__duration"
+    [trackNumber]="trackNumber()"
+    [stepNumber]="stepNumber()"
+    [step]="step()"
+    [numerator]="numerator()"
+    [denominator]="denominator()"
+  ></app-duration-selector>
 </div>

@@ -1,11 +1,7 @@
-:host {
-  display: flex;
-}
-
 .note-selector {
   display: flex;
   flex-direction: column;
-  max-width: 4.375rem;
+  width: 7rem;
 
   sl-select::part(expand-icon) {
     display: none;

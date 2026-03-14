@@ -10,7 +10,7 @@
           "mute": "Mute",
           "solo": "Solo",
           "steps": {
-            "label": "Steps (Octave, Semitone, Velocity, Duration)"
+            "label": "Steps (Octave, Semitone, Velocity, Duration, Aftertouch)"
           }
         },
         "transportToolbar": {
@@ -55,7 +55,7 @@
           "mute": "Stumm",
           "solo": "Solo",
           "steps": {
-            "label": "Schritte (Oktave, Halbton, Anschlagstärke, Dauer)"
+            "label": "Schritte (Oktave, Halbton, Anschlagstärke, Dauer, Aftertouch)"
           }
         },
         "transportToolbar": {

@@ -8,20 +8,21 @@ import {
   switchMap,
   take,
 } from 'rxjs';
-import {
-  Bars,
-  Rotation,
-  Track,
-  TrackRuntimeState,
-  TransportState,
-} from '../../models/scheduler.models';
 import { MidiDownloadService } from '../midi-download/midi-download.service';
 import { MidiExportService } from '../midi-export/midi-export.service';
 import { MidiOutputService } from '../midi-output/midi-output.service';
 import { SchedulerEngine } from '../scheduler-engine/scheduler-engine.service';
-import { TimingService } from '../timing/timing.service';
-import { TrackStateService } from '../track-state/track-state.service';
-import { TransportService } from '../transport/transport.service';
+import { Bars, TimingService } from '../timing/timing.service';
+import {
+  Rotation,
+  Track,
+  TrackRuntimeState,
+  TrackStateService,
+} from '../track-state/track-state.service';
+import {
+  TransportService,
+  TransportState,
+} from '../transport/transport.service';
 
 export interface UiStatus {
   activeStep: number;
@@ -83,10 +84,10 @@ export class SchedulerService {
 
           const activeStep =
             (run.nextStepIndex + track.rotation.shift * bars.base) %
-            track.steps;
+            track.steps.length;
 
           const rotationDeg =
-            ((track.rotation.shift * bars.base) / track.steps) * 360;
+            ((track.rotation.shift * bars.base) / track.steps.length) * 360;
 
           return {
             activeStep,
@@ -105,8 +106,20 @@ export class SchedulerService {
     this._timing.setBars(bars);
   }
 
+  public resetBars(): void {
+    this._timing.resetBars();
+  }
+
   public setTrackActive(id: number, active: boolean): void {
     this._trackState.setTrackActive(id, active);
+  }
+
+  public setTrackSolo(id: number, solo: boolean): void {
+    this._trackState.setTrackSolo(id, solo);
+  }
+
+  public setTrackMute(id: number, mute: boolean): void {
+    this._trackState.setTrackMute(id, mute);
   }
 
   public setTrackSteps(id: number, steps: number): void {
@@ -121,16 +134,44 @@ export class SchedulerService {
     this._trackState.setMidiChannel(id, channel);
   }
 
-  public setNote(track: number, step: number, note: number | null): void {
-    this._trackState.setNote(track, step, note);
+  public setOctave(track: number, step: number, octave: number | null): void {
+    this._trackState.setOctave(track, step, octave);
+  }
+
+  public setSemitone(
+    track: number,
+    step: number,
+    semitone: number | null,
+  ): void {
+    this._trackState.setSemitone(track, step, semitone);
   }
 
   public setVelocity(track: number, step: number, velocity: number): void {
     this._trackState.setVelocity(track, step, velocity);
   }
 
-  public setDuration(track: number, step: number, duration: number): void {
-    this._trackState.setDuration(track, step, duration);
+  public setDurationStep(
+    track: number,
+    step: number,
+    durationStep: number,
+  ): void {
+    this._trackState.setDurationStep(track, step, durationStep);
+  }
+
+  public setDurationNumerator(
+    track: number,
+    step: number,
+    durationNumerator: number,
+  ): void {
+    this._trackState.setDurationNumerator(track, step, durationNumerator);
+  }
+
+  public setDurationDenominator(
+    track: number,
+    step: number,
+    durationDenominator: number,
+  ): void {
+    this._trackState.setDurationDenominator(track, step, durationDenominator);
   }
 
   public play(): void {

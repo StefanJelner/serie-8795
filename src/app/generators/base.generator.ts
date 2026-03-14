@@ -1,4 +1,5 @@
 import { ToneSpace } from '../chord-progressions/base.chord-progressions';
+import { MidiHelper } from '../helpers/midi.helper';
 
 export enum GeneratorType {
   DETERMINISTIC_MODULO = 'DETERMINISTIC_MODULO',
@@ -11,7 +12,7 @@ export abstract class BaseGenerator {
   static readonly type: GeneratorType | null = null;
 
   protected static limitToMidi(value: number): number {
-    return Math.min(127, Math.max(0, value));
+    return MidiHelper.limitToMidi(value);
   }
 
   public getNextValues(count: number): number[] {

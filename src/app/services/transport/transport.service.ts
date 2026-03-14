@@ -1,5 +1,10 @@
 import { BehaviorSubject, Observable } from 'rxjs';
-import { TransportState } from '../../models/scheduler.models';
+
+export enum TransportState {
+  PLAYING = 'PLAYING',
+  PAUSED = 'PAUSED',
+  STOPPED = 'STOPPED',
+}
 
 export class TransportService {
   private readonly _state$ = new BehaviorSubject<TransportState>(

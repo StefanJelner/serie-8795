@@ -1,10 +1,17 @@
+import { Bars, TimingService } from '../timing/timing.service';
 import {
-  Bars,
-  MidiEvent,
   Rotation,
   Track,
-} from '../../models/scheduler.models';
-import { TimingService } from '../timing/timing.service';
+  TrackStateService,
+} from '../track-state/track-state.service';
+
+export interface MidiEvent {
+  time: number;
+  type: 'on' | 'off';
+  channel: number;
+  note: number;
+  velocity: number;
+}
 
 export class MidiExportService {
   private static readonly TPQ = 480;
@@ -41,7 +48,7 @@ export class MidiExportService {
     bpm: number,
     bars: Bars,
   ): ReadonlyArray<ReadonlyArray<MidiEvent>> {
-    const stepDuration = this.timing.getStepDuration(bpm, bars);
+    const duration = this.timing.getStepDuration(bpm, bars);
 
     const runtime = tracks.map(() => {
       return {
@@ -63,13 +70,25 @@ export class MidiExportService {
         }
 
         const rt = runtime[i];
-        const step = rt.nextStepIndex;
+        const stepIndex = rt.nextStepIndex;
+        const step = track.steps[stepIndex];
 
-        const note = track.notes[step];
+        const octave = step.octave;
+        const semitone = step.semitone;
+        const velocity = step.velocity;
+        const stepDuration = TrackStateService.getDurationFloat(
+          step.duration.step,
+          step.duration.numerator,
+          step.duration.denominator,
+        );
 
-        if (note !== null) {
-          const velocity = track.velocity[step];
-          const duration = track.duration[step];
+        if (
+          octave !== null &&
+          semitone !== null &&
+          velocity > 0 &&
+          stepDuration > 0
+        ) {
+          const note = TrackStateService.getMidiNote(octave, semitone);
 
           events[i].push({
             time,
@@ -80,7 +99,7 @@ export class MidiExportService {
           });
 
           events[i].push({
-            time: time + duration,
+            time: time + duration * stepDuration,
             type: 'off',
             channel: track.midiChannel,
             note,
@@ -88,7 +107,7 @@ export class MidiExportService {
           });
         }
 
-        rt.nextStepIndex = (step + 1) % track.steps;
+        rt.nextStepIndex = (stepIndex + 1) % track.steps.length;
 
         if (rt.nextStepIndex === 0) {
           rt.cycleCount = rt.cycleCount + 1;
@@ -103,7 +122,7 @@ export class MidiExportService {
         }
       });
 
-      time = time + stepDuration;
+      time = time + duration;
     }
 
     return events;

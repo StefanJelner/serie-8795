@@ -1,13 +1,12 @@
-import { CommonModule } from '@angular/common';
 import { Component, CUSTOM_ELEMENTS_SCHEMA, inject } from '@angular/core';
-import { TranslatePipe } from '../../pipes/translate.pipe';
+import { DEFAULT_IMPORTS } from '../../default-imports';
 import { SchedulerService } from '../../services/scheduler/scheduler.service';
 
 @Component({
   selector: 'app-transport-toolbar',
-  imports: [CommonModule, TranslatePipe],
+  imports: [...DEFAULT_IMPORTS],
   templateUrl: './transport-toolbar.component.html',
-  styleUrl: './transport-toolbar.component.scss',
+  styleUrls: ['./transport-toolbar.component.scss'],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class TransportToolbarComponent {

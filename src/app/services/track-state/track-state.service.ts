@@ -1,33 +1,138 @@
 import { BehaviorSubject, Observable, Subject, withLatestFrom } from 'rxjs';
-import { Rotation, Track } from '../../models/scheduler.models';
+import { MidiHelper } from '../../helpers/midi.helper';
+import { TimingService } from '../timing/timing.service';
+
+export interface Rotation {
+  after: number;
+  shift: number;
+}
+
+export interface Duration {
+  step: number;
+  numerator: number;
+  denominator: number;
+}
+
+export interface Step {
+  octave: number | null;
+  semitone: number | null;
+  velocity: number;
+  duration: Duration;
+}
+
+export interface Track {
+  active: boolean;
+  solo: boolean;
+  mute: boolean;
+  rotation: Rotation;
+  midiChannel: number;
+  steps: ReadonlyArray<Step>;
+}
+
+export interface TrackRuntimeState {
+  nextStepIndex: number;
+  nextStepTime: number;
+  cycleCount: number;
+}
 
 export class TrackStateService {
   public static readonly DEFAULT_TRACKS = 8;
   public static readonly DEFAULT_STEPS = 16;
+  public static readonly DEFAULT_OCTAVE: number | null = null;
+  public static readonly DEFAULT_SEMITONE: number | null = null;
   public static readonly DEFAULT_VELOCITY = 100;
-  public static readonly DEFAULT_DURATION = 1;
+  public static readonly MIN_VELOCITY = 0;
+  public static readonly MAX_VELOCITY = 127;
+  public static readonly DEFAULT_DURATION_STEP = 1;
+  public static readonly MIN_DURATION_STEP = 0;
+  private static readonly OCTAVES = Array.from({ length: 11 }, (_, i) => i - 1); // -1 to 9
+  public static readonly MIN_OCTAVE = TrackStateService.OCTAVES[0];
+  public static readonly MAX_OCTAVE =
+    TrackStateService.OCTAVES[TrackStateService.OCTAVES.length - 1];
+  private static readonly SEMITONES = [
+    'C',
+    'C#/Db',
+    'D',
+    'D#/Eb',
+    'E',
+    'F',
+    'F#/Gb',
+    'G',
+    'G#/Ab',
+    'A',
+    'A#/Bb',
+    'B',
+  ];
+  public static readonly MIN_SEMITONE = 0;
+  public static readonly MAX_SEMITONE = TrackStateService.SEMITONES.length - 1;
+  public static readonly getOctaves = () => TrackStateService.OCTAVES.slice();
+  public static readonly getSemitones = () =>
+    TrackStateService.SEMITONES.slice();
+  public static readonly getMidiNote = (
+    octave: number,
+    semitone: number,
+  ): number => {
+    return MidiHelper.limitToMidi((octave + 1) * 12 + semitone);
+  };
+  public static readonly maxSemitone = (
+    octave: number | null,
+    semitone: number | null,
+  ): boolean => octave === 9 && semitone !== null && semitone > 7;
+  private static readonly DURATION_DENOMINATORS = Array.from(
+    { length: Math.log2(TimingService.MAX_BARS) },
+    (_, i) => 2 ** (i + 1),
+  );
+  public static readonly getDenominators = () =>
+    TrackStateService.DURATION_DENOMINATORS.slice();
+  public static readonly DEFAULT_DURATION_DENOMINATOR = 1;
+  public static readonly MIN_DURATION_DENOMINATOR = 1;
+  public static readonly MAX_DURATION_DENOMINATOR =
+    TrackStateService.DURATION_DENOMINATORS[
+      TrackStateService.DURATION_DENOMINATORS.length - 1
+    ];
+  public static readonly DEFAULT_DURATION_NUMERATOR = 0;
+  public static readonly MIN_DURATION_NUMERATOR = 0;
+  public static readonly getDurationFloat = (
+    step: number,
+    numerator: number,
+    denominator: number,
+  ): number => {
+    if (
+      denominator <= TrackStateService.MIN_DURATION_DENOMINATOR ||
+      denominator > TimingService.MAX_BARS ||
+      numerator < TrackStateService.MIN_DURATION_NUMERATOR ||
+      numerator >= denominator ||
+      step <= TrackStateService.MIN_DURATION_STEP
+    ) {
+      return 0;
+    }
+
+    return step + numerator / denominator;
+  };
 
   private readonly _tracks$ = new BehaviorSubject<ReadonlyArray<Track>>(
     Array.from({
       length: TrackStateService.DEFAULT_TRACKS,
-    }).map((_) => {
-      const steps = TrackStateService.DEFAULT_STEPS;
-
-      return {
-        active: false,
-        solo: false,
-        mute: false,
-        steps,
-        rotation: {
-          after: 1,
-          shift: 0,
+    }).map((_) => ({
+      active: false,
+      solo: false,
+      mute: false,
+      rotation: {
+        after: 1,
+        shift: 0,
+      },
+      midiChannel: 0,
+      steps: Array(TrackStateService.DEFAULT_STEPS).fill({
+        octave: TrackStateService.DEFAULT_OCTAVE,
+        semitone: TrackStateService.DEFAULT_SEMITONE,
+        velocity: TrackStateService.DEFAULT_VELOCITY,
+        duration: {
+          step: TrackStateService.DEFAULT_DURATION_STEP,
+          numerator: TrackStateService.DEFAULT_DURATION_NUMERATOR,
+          denominator: TrackStateService.DEFAULT_DURATION_DENOMINATOR,
         },
-        midiChannel: 0,
-        notes: Array(steps).fill(null),
-        velocity: Array(steps).fill(TrackStateService.DEFAULT_VELOCITY),
-        duration: Array(steps).fill(TrackStateService.DEFAULT_DURATION),
-      };
-    }),
+      }),
+    })),
   );
 
   private readonly _trackUpdates$ = new Subject<
@@ -88,10 +193,16 @@ export class TrackStateService {
       return this.updateTrack(tracks, id, (track) => {
         return {
           ...track,
-          steps,
-          notes: this.resizeArray(track.notes, steps, null),
-          velocity: this.resizeArray(track.velocity, steps, 100),
-          duration: this.resizeArray(track.duration, steps, 1),
+          steps: this.resizeArray(track.steps, steps, {
+            octave: TrackStateService.DEFAULT_OCTAVE,
+            semitone: TrackStateService.DEFAULT_SEMITONE,
+            velocity: TrackStateService.DEFAULT_VELOCITY,
+            duration: {
+              step: TrackStateService.DEFAULT_DURATION_STEP,
+              numerator: TrackStateService.DEFAULT_DURATION_NUMERATOR,
+              denominator: TrackStateService.DEFAULT_DURATION_DENOMINATOR,
+            },
+          }),
         };
       });
     });
@@ -123,12 +234,43 @@ export class TrackStateService {
     });
   }
 
-  public setNote(trackId: number, step: number, note: number | null): void {
+  public setOctave(trackId: number, step: number, octave: number | null): void {
     this._trackUpdates$.next((tracks) => {
+      const semitone = tracks[trackId].steps[step].semitone;
+
       return this.updateTrack(tracks, trackId, (track) => {
         return {
           ...track,
-          notes: this.updateStepArray(track.notes, step, note),
+          steps: this.updateStepArray(track.steps, step, {
+            ...track.steps[step],
+            octave,
+            ...(TrackStateService.maxSemitone(octave, semitone) === true
+              ? { semitone: 7 }
+              : {}),
+          }),
+        };
+      });
+    });
+  }
+
+  public setSemitone(
+    trackId: number,
+    step: number,
+    semitone: number | null,
+  ): void {
+    this._trackUpdates$.next((tracks) => {
+      const octave = tracks[trackId].steps[step].octave;
+
+      return this.updateTrack(tracks, trackId, (track) => {
+        return {
+          ...track,
+          steps: this.updateStepArray(track.steps, step, {
+            ...track.steps[step],
+            semitone:
+              TrackStateService.maxSemitone(octave, semitone) === true
+                ? 7
+                : semitone,
+          }),
         };
       });
     });
@@ -139,18 +281,94 @@ export class TrackStateService {
       return this.updateTrack(tracks, trackId, (track) => {
         return {
           ...track,
-          velocity: this.updateStepArray(track.velocity, step, velocity),
+          steps: this.updateStepArray(track.steps, step, {
+            ...track.steps[step],
+            velocity: Math.max(
+              TrackStateService.MIN_VELOCITY,
+              Math.min(velocity, TrackStateService.MAX_VELOCITY),
+            ),
+          }),
         };
       });
     });
   }
 
-  public setDuration(trackId: number, step: number, duration: number): void {
+  public setDurationStep(
+    trackId: number,
+    step: number,
+    durationStep: number,
+  ): void {
     this._trackUpdates$.next((tracks) => {
       return this.updateTrack(tracks, trackId, (track) => {
         return {
           ...track,
-          duration: this.updateStepArray(track.duration, step, duration),
+          steps: this.updateStepArray(track.steps, step, {
+            ...track.steps[step],
+            duration: {
+              ...track.steps[step].duration,
+              step: Math.max(TrackStateService.MIN_DURATION_STEP, durationStep),
+            },
+          }),
+        };
+      });
+    });
+  }
+
+  public setDurationNumerator(
+    trackId: number,
+    step: number,
+    durationNumerator: number,
+  ): void {
+    this._trackUpdates$.next((tracks) => {
+      return this.updateTrack(tracks, trackId, (track) => {
+        return {
+          ...track,
+          steps: this.updateStepArray(track.steps, step, {
+            ...track.steps[step],
+            duration: {
+              ...track.steps[step].duration,
+              numerator: Math.max(
+                TrackStateService.MIN_DURATION_NUMERATOR,
+                Math.min(
+                  durationNumerator,
+                  track.steps[step].duration.denominator - 1,
+                  TrackStateService.MAX_DURATION_DENOMINATOR - 1,
+                ),
+              ),
+            },
+          }),
+        };
+      });
+    });
+  }
+
+  public setDurationDenominator(
+    trackId: number,
+    step: number,
+    durationDenominator: number,
+  ): void {
+    this._trackUpdates$.next((tracks) => {
+      return this.updateTrack(tracks, trackId, (track) => {
+        return {
+          ...track,
+          steps: this.updateStepArray(track.steps, step, {
+            ...track.steps[step],
+            duration: {
+              ...track.steps[step].duration,
+              numerator: Math.min(
+                track.steps[step].duration.numerator,
+                durationDenominator - 1,
+                TrackStateService.MAX_DURATION_DENOMINATOR - 1,
+              ),
+              denominator: Math.max(
+                TrackStateService.MIN_DURATION_DENOMINATOR,
+                Math.min(
+                  durationDenominator,
+                  TrackStateService.MAX_DURATION_DENOMINATOR,
+                ),
+              ),
+            },
+          }),
         };
       });
     });

@@ -15,14 +15,14 @@ import '@shoelace-style/shoelace/dist/components/select/select.js';
 import '@shoelace-style/shoelace/dist/components/split-panel/split-panel.js';
 import '@shoelace-style/shoelace/dist/shoelace.js';
 import i18nData from '../../i18n.json';
-import { TranslatePipe } from './pipes/translate.pipe';
+import { DEFAULT_IMPORTS } from './default-imports';
 import { I18nService } from './services/i18n/i18n.service';
 import { IconService } from './services/icon/icon-service';
 import { Theme, ThemeService } from './services/theme/theme.service';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, TranslatePipe],
+  imports: [...DEFAULT_IMPORTS, RouterOutlet],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],

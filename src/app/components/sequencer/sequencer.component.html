@@ -5,17 +5,16 @@
       class="sequencer__bpm"
       type="number"
       label="BPM"
-      min="{{ TimingService.MIN_BPM }}"
-      max="{{ TimingService.MAX_BPM }}"
-      value="{{ (bpm$ | async) ?? TimingService.DEFAULT_BPM }}"
+      [min]="minBpm"
+      [max]="maxBpm"
+      [value]="(bpm$ | async) ?? defaultBpm"
       size="small"
       (sl-change)="updateBpm($any(bpmRef.value))"
     ></sl-input>
     <app-bars-selector
       class="sequencer__bars"
-      [base]="(bars$ | async)?.base ?? TimingService.DEFAULT_BASE"
-      [value]="(bars$ | async)?.value ?? TimingService.DEFAULT_VALUE"
-      (barsChange)="updateBars($any($event))"
+      [base]="(bars$ | async)?.base ?? defaultBase"
+      [value]="(bars$ | async)?.value ?? defaultValue"
     ></app-bars-selector>
   </header>
   <section class="sequencer__tracks">

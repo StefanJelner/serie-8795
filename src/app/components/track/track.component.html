@@ -1,18 +1,24 @@
 <div class="track">
   <section class="track__section track__section--active">
     <sl-checkbox
-      [attr.checked]="track().active ? 'checked' : null"
+      #activeRef
+      [checked]="track().active ? 'checked' : null"
       size="small"
+      (sl-change)="setActive(activeRef.checked)"
       >{{ ('components.track.active' | translate)() }}</sl-checkbox
     >
     <sl-checkbox
-      [attr.checked]="track().solo ? 'checked' : null"
+      #soloRef
+      [checked]="track().solo ? 'checked' : null"
       size="small"
+      (sl-change)="setSolo(soloRef.checked)"
       >{{ ('components.track.solo' | translate)() }}</sl-checkbox
     >
     <sl-checkbox
-      [attr.checked]="track().mute ? 'checked' : null"
+      #muteRef
+      [checked]="track().mute ? 'checked' : null"
       size="small"
+      (sl-change)="setMute(muteRef.checked)"
       >{{ ('components.track.mute' | translate)() }}</sl-checkbox
     >
   </section>
@@ -21,10 +27,17 @@
       {{ ('components.track.steps.label' | translate)() }}
     </h1>
     <ul class="track__steps">
-      @for (note of track().notes; let j = $index; track j) {
+      @for (step of track().steps; let j = $index; track j) {
         <li class="track__step">
           <app-note-selector
-            (noteChange)="updateNote(number(), j, $event)"
+            [trackNumber]="number()"
+            [stepNumber]="j"
+            [octave]="step.octave"
+            [semitone]="step.semitone"
+            [velocity]="step.velocity"
+            [step]="step.duration.step"
+            [numerator]="step.duration.numerator"
+            [denominator]="step.duration.denominator"
           ></app-note-selector>
         </li>
       }

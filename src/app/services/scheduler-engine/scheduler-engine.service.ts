@@ -1,16 +1,17 @@
 import { BehaviorSubject, interval, Observable, Subject } from 'rxjs';
 import { filter, withLatestFrom } from 'rxjs/operators';
+import { SchedulerWorkletNode } from '../../worklets/scheduler/scheduler.worklet';
+import { MidiOutputService } from '../midi-output/midi-output.service';
+import { Bars, TimingService } from '../timing/timing.service';
 import {
-  Bars,
-  Rotation,
   Track,
   TrackRuntimeState,
+  TrackStateService,
+} from '../track-state/track-state.service';
+import {
+  TransportService,
   TransportState,
-} from '../../models/scheduler.models';
-import { MidiOutputService } from '../midi-output/midi-output.service';
-import { TimingService } from '../timing/timing.service';
-import { TrackStateService } from '../track-state/track-state.service';
-import { TransportService } from '../transport/transport.service';
+} from '../transport/transport.service';
 
 export class SchedulerEngine {
   public static readonly LOOKAHEAD = 1000;
@@ -25,7 +26,7 @@ export class SchedulerEngine {
     ) => ReadonlyArray<TrackRuntimeState>
   >();
   private readonly _audioCtx = new AudioContext();
-  private _audioWorklet: AudioWorkletNode | undefined = undefined;
+  private _audioWorklet: SchedulerWorkletNode | undefined = undefined;
 
   constructor(
     private readonly timing: TimingService,
@@ -39,7 +40,7 @@ export class SchedulerEngine {
         this._audioWorklet = new AudioWorkletNode(
           this._audioCtx,
           'scheduler-worklet',
-        );
+        ) as SchedulerWorkletNode;
 
         this._audioWorklet.port.onmessage = (event) => {
           if (event.data.type === 'position') {
@@ -115,56 +116,32 @@ export class SchedulerEngine {
     const stepDuration = this.timing.getStepDuration(bpm, bars);
 
     tracks.forEach((track, index) => {
-      if (!track.active) return;
+      if (!track.active) {
+        return;
+      }
 
       let nextTime = now;
       let nextIndex = 0;
 
       while (nextTime < lookaheadEnd) {
+        const octave = track.steps[nextIndex].octave;
+        const semitone = track.steps[nextIndex].semitone;
+
+        if (octave === null || semitone === null) {
+          continue;
+        }
+
         this._audioWorklet?.port.postMessage({
           type: 'schedule',
           track: index,
-          channel: track.midiChannel,
-          note: track.notes[nextIndex],
-          velocity: track.velocity[nextIndex],
-          duration: track.duration[nextIndex],
+          stepIndex: nextIndex,
           time: nextTime,
+          cycleCount: 0,
         });
 
         nextTime += stepDuration;
-        nextIndex = (nextIndex + 1) % track.steps;
+        nextIndex = (nextIndex + 1) % track.steps.length;
       }
     });
-  }
-
-  private applyRotation(index: number, rotation: Rotation, bars: Bars): number {
-    const shift = rotation.shift * bars.base;
-
-    return (index + shift + 9999) % 9999;
-  }
-
-  private scheduleEvent(track: Track, stepIndex: number, time: number): void {
-    const note = track.notes[stepIndex];
-
-    if (note === null) {
-      return;
-    }
-
-    const velocity = track.velocity[stepIndex];
-
-    const duration = track.duration[stepIndex];
-
-    this._audioWorklet?.port.postMessage({
-      type: 'schedule',
-      channel: track.midiChannel,
-      note,
-      velocity,
-      start: time,
-      end: time + duration,
-    });
-
-    this.midi.noteOn(track.midiChannel, note, velocity, time);
-
-    this.midi.noteOff(track.midiChannel, note, time + duration);
   }
 }

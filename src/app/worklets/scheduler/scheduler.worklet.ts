@@ -1,14 +1,47 @@
-import type { TrackRuntimeState } from '../../models/scheduler.models';
+import { TrackRuntimeState } from '../../services/track-state/track-state.service';
 
-interface MessageEvent<T = any> {
+interface InitData {
+  type: 'init';
+  trackCount: number;
+}
+
+interface ResetData {
+  type: 'reset';
+}
+
+interface PositionUpdateData {
+  type: 'position-update';
+  runtime: TrackRuntimeState[];
+}
+
+interface ScheduleData {
+  type: 'schedule';
+  track: number;
+  stepIndex: number;
+  time: number;
+  cycleCount: number;
+}
+
+interface PositionData {
+  type: 'position';
+  runtime: TrackRuntimeState[];
+}
+
+type WorkletOnMessage =
+  | InitData
+  | ResetData
+  | PositionUpdateData
+  | ScheduleData;
+
+interface TypedMessageEvent<T = any> {
   data: T;
 }
-interface MessagePort {
-  onmessage: ((event: MessageEvent<any>) => void) | null;
-  postMessage(message: any): void;
+interface TypedMessagePort<In, Out> {
+  onmessage: ((event: TypedMessageEvent<In>) => void) | null;
+  postMessage(message: Out): void;
 }
 declare abstract class AudioWorkletProcessor {
-  readonly port: MessagePort;
+  readonly port: TypedMessagePort<WorkletOnMessage, PositionData>;
   constructor();
   process(
     inputs: Float32Array[][],
@@ -20,6 +53,10 @@ declare function registerProcessor(
   name: string,
   processorCtor: new () => AudioWorkletProcessor,
 ): void;
+
+export type SchedulerWorkletNode = Omit<AudioWorkletNode, 'port'> & {
+  port: TypedMessagePort<PositionData, WorkletOnMessage>;
+};
 
 class SchedulerWorklet extends AudioWorkletProcessor {
   private _runtimeState: TrackRuntimeState[] = [];
@@ -95,12 +132,7 @@ class SchedulerWorklet extends AudioWorkletProcessor {
     };
   }
 
-  private _handleScheduleEvent(data: {
-    track: number;
-    stepIndex?: number;
-    time?: number;
-    cycleCount?: number;
-  }): void {
+  private _handleScheduleEvent(data: ScheduleData): void {
     const trackIndex = Math.trunc(data.track);
 
     if (trackIndex < 0) {
