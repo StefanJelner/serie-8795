@@ -1,5 +1,6 @@
 import { BehaviorSubject, Subject, withLatestFrom } from 'rxjs';
 import { MidiHelper } from '../../helpers/midi.helper';
+import { TimingService } from '../timing/timing.service';
 export class TrackStateService {
     static DEFAULT_TRACKS = 8;
     static DEFAULT_STEPS = 16;
@@ -8,7 +9,8 @@ export class TrackStateService {
     static DEFAULT_VELOCITY = 100;
     static MIN_VELOCITY = 0;
     static MAX_VELOCITY = 127;
-    static DEFAULT_DURATION = 1;
+    static DEFAULT_DURATION_STEP = 1;
+    static MIN_DURATION_STEP = 0;
     static OCTAVES = Array.from({ length: 11 }, (_, i) => i - 1); // -1 to 9
     static MIN_OCTAVE = TrackStateService.OCTAVES[0];
     static MAX_OCTAVE = TrackStateService.OCTAVES[TrackStateService.OCTAVES.length - 1];
@@ -34,6 +36,23 @@ export class TrackStateService {
         return MidiHelper.limitToMidi((octave + 1) * 12 + semitone);
     };
     static maxSemitone = (octave, semitone) => octave === 9 && semitone !== null && semitone > 7;
+    static DURATION_DENOMINATORS = Array.from({ length: Math.log2(TimingService.MAX_BARS) }, (_, i) => 2 ** (i + 1));
+    static getDenominators = () => TrackStateService.DURATION_DENOMINATORS.slice();
+    static DEFAULT_DURATION_DENOMINATOR = 1;
+    static MIN_DURATION_DENOMINATOR = 1;
+    static MAX_DURATION_DENOMINATOR = TrackStateService.DURATION_DENOMINATORS[TrackStateService.DURATION_DENOMINATORS.length - 1];
+    static DEFAULT_DURATION_NUMERATOR = 0;
+    static MIN_DURATION_NUMERATOR = 0;
+    static getDurationFloat = (step, numerator, denominator) => {
+        if (denominator <= TrackStateService.MIN_DURATION_DENOMINATOR ||
+            denominator > TimingService.MAX_BARS ||
+            numerator < TrackStateService.MIN_DURATION_NUMERATOR ||
+            numerator >= denominator ||
+            step <= TrackStateService.MIN_DURATION_STEP) {
+            return 0;
+        }
+        return step + numerator / denominator;
+    };
     _tracks$ = new BehaviorSubject(Array.from({
         length: TrackStateService.DEFAULT_TRACKS,
     }).map((_) => ({
@@ -49,7 +68,11 @@ export class TrackStateService {
             octave: TrackStateService.DEFAULT_OCTAVE,
             semitone: TrackStateService.DEFAULT_SEMITONE,
             velocity: TrackStateService.DEFAULT_VELOCITY,
-            duration: TrackStateService.DEFAULT_DURATION,
+            duration: {
+                step: TrackStateService.DEFAULT_DURATION_STEP,
+                numerator: TrackStateService.DEFAULT_DURATION_NUMERATOR,
+                denominator: TrackStateService.DEFAULT_DURATION_DENOMINATOR,
+            },
         }),
     })));
     _trackUpdates$ = new Subject();
@@ -105,7 +128,11 @@ export class TrackStateService {
                         octave: TrackStateService.DEFAULT_OCTAVE,
                         semitone: TrackStateService.DEFAULT_SEMITONE,
                         velocity: TrackStateService.DEFAULT_VELOCITY,
-                        duration: TrackStateService.DEFAULT_DURATION,
+                        duration: {
+                            step: TrackStateService.DEFAULT_DURATION_STEP,
+                            numerator: TrackStateService.DEFAULT_DURATION_NUMERATOR,
+                            denominator: TrackStateService.DEFAULT_DURATION_DENOMINATOR,
+                        },
                     }),
                 };
             });
@@ -174,20 +201,56 @@ export class TrackStateService {
                     ...track,
                     steps: this.updateStepArray(track.steps, step, {
                         ...track.steps[step],
-                        velocity,
+                        velocity: Math.max(TrackStateService.MIN_VELOCITY, Math.min(velocity, TrackStateService.MAX_VELOCITY)),
                     }),
                 };
             });
         });
     }
-    setDuration(trackId, step, duration) {
+    setDurationStep(trackId, step, durationStep) {
         this._trackUpdates$.next((tracks) => {
             return this.updateTrack(tracks, trackId, (track) => {
                 return {
                     ...track,
                     steps: this.updateStepArray(track.steps, step, {
                         ...track.steps[step],
-                        duration,
+                        duration: {
+                            ...track.steps[step].duration,
+                            step: Math.max(TrackStateService.MIN_DURATION_STEP, durationStep),
+                        },
+                    }),
+                };
+            });
+        });
+    }
+    setDurationNumerator(trackId, step, durationNumerator) {
+        this._trackUpdates$.next((tracks) => {
+            return this.updateTrack(tracks, trackId, (track) => {
+                return {
+                    ...track,
+                    steps: this.updateStepArray(track.steps, step, {
+                        ...track.steps[step],
+                        duration: {
+                            ...track.steps[step].duration,
+                            numerator: Math.max(TrackStateService.MIN_DURATION_NUMERATOR, Math.min(durationNumerator, track.steps[step].duration.denominator - 1, TrackStateService.MAX_DURATION_DENOMINATOR - 1)),
+                        },
+                    }),
+                };
+            });
+        });
+    }
+    setDurationDenominator(trackId, step, durationDenominator) {
+        this._trackUpdates$.next((tracks) => {
+            return this.updateTrack(tracks, trackId, (track) => {
+                return {
+                    ...track,
+                    steps: this.updateStepArray(track.steps, step, {
+                        ...track.steps[step],
+                        duration: {
+                            ...track.steps[step].duration,
+                            numerator: Math.min(track.steps[step].duration.numerator, durationDenominator - 1, TrackStateService.MAX_DURATION_DENOMINATOR - 1),
+                            denominator: Math.max(TrackStateService.MIN_DURATION_DENOMINATOR, Math.min(durationDenominator, TrackStateService.MAX_DURATION_DENOMINATOR)),
+                        },
                     }),
                 };
             });

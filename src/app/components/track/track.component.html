@@ -1,5 +1,5 @@
 <div class="track">
-  <section class="track__section track__section--active">
+  <section class="track__section track__section--status">
     <sl-checkbox
       #activeRef
       [checked]="track().active ? 'checked' : null"
@@ -22,10 +22,47 @@
       >{{ ('components.track.mute' | translate)() }}</sl-checkbox
     >
   </section>
+  <section class="track__section track__section--timing">
+    <sl-tooltip
+      [content]="
+        (
+          'components.track.swing'
+          | translate: { min: '' + minSwing, max: '' + maxSwing }
+        )()
+      "
+    >
+      <sl-input
+        #swingRef
+        class="track__swing"
+        type="number"
+        size="small"
+        [min]="minSwing"
+        [max]="maxSwing"
+        [value]="track().swing"
+        (sl-change)="setSwing($any(swingRef.value))"
+      ></sl-input>
+    </sl-tooltip>
+    <sl-tooltip
+      [content]="
+        (
+          'components.track.humanize'
+          | translate: { min: '' + minHumanize, max: '' + maxHumanize }
+        )()
+      "
+    >
+      <sl-input
+        #humanizeRef
+        class="track__humanize"
+        type="number"
+        size="small"
+        [min]="minHumanize"
+        [max]="maxHumanize"
+        [value]="track().humanize"
+        (sl-change)="setHumanize($any(humanizeRef.value))"
+      ></sl-input>
+    </sl-tooltip>
+  </section>
   <section class="track__section track__section--steps">
-    <h1 class="track__title">
-      {{ ('components.track.steps.label' | translate)() }}
-    </h1>
     <ul class="track__steps">
       @for (step of track().steps; let j = $index; track j) {
         <li class="track__step">

@@ -27,6 +27,8 @@ export interface Track {
   rotation: Rotation;
   midiChannel: number;
   steps: ReadonlyArray<Step>;
+  swing: number;
+  humanize: number;
 }
 
 export interface TrackRuntimeState {
@@ -109,6 +111,12 @@ export class TrackStateService {
 
     return step + numerator / denominator;
   };
+  public static readonly DEFAULT_SWING = 0;
+  public static readonly MIN_SWING = -40;
+  public static readonly MAX_SWING = 40;
+  public static readonly DEFAULT_HUMANIZE = 0;
+  public static readonly MIN_HUMANIZE = 0;
+  public static readonly MAX_HUMANIZE = 15;
 
   private readonly _tracks$ = new BehaviorSubject<ReadonlyArray<Track>>(
     Array.from({
@@ -132,6 +140,8 @@ export class TrackStateService {
           denominator: TrackStateService.DEFAULT_DURATION_DENOMINATOR,
         },
       }),
+      swing: TrackStateService.DEFAULT_SWING,
+      humanize: TrackStateService.DEFAULT_HUMANIZE,
     })),
   );
 
@@ -208,7 +218,7 @@ export class TrackStateService {
     });
   }
 
-  public setRotation(id: number, rotation: Rotation): void {
+  public setTrackRotation(id: number, rotation: Rotation): void {
     this._trackUpdates$.next((tracks) => {
       return this.updateTrack(tracks, id, (track) => {
         return {
@@ -219,7 +229,7 @@ export class TrackStateService {
     });
   }
 
-  public setMidiChannel(id: number, channel: number): void {
+  public setTrackMidiChannel(id: number, channel: number): void {
     if (channel < 0 || channel > 15) {
       return;
     }
@@ -234,7 +244,11 @@ export class TrackStateService {
     });
   }
 
-  public setOctave(trackId: number, step: number, octave: number | null): void {
+  public setStepOctave(
+    trackId: number,
+    step: number,
+    octave: number | null,
+  ): void {
     this._trackUpdates$.next((tracks) => {
       const semitone = tracks[trackId].steps[step].semitone;
 
@@ -253,7 +267,7 @@ export class TrackStateService {
     });
   }
 
-  public setSemitone(
+  public setStepSemitone(
     trackId: number,
     step: number,
     semitone: number | null,
@@ -276,7 +290,11 @@ export class TrackStateService {
     });
   }
 
-  public setVelocity(trackId: number, step: number, velocity: number): void {
+  public setStepVelocity(
+    trackId: number,
+    step: number,
+    velocity: number,
+  ): void {
     this._trackUpdates$.next((tracks) => {
       return this.updateTrack(tracks, trackId, (track) => {
         return {
@@ -293,7 +311,7 @@ export class TrackStateService {
     });
   }
 
-  public setDurationStep(
+  public setStepDurationStep(
     trackId: number,
     step: number,
     durationStep: number,
@@ -314,7 +332,7 @@ export class TrackStateService {
     });
   }
 
-  public setDurationNumerator(
+  public setStepDurationNumerator(
     trackId: number,
     step: number,
     durationNumerator: number,
@@ -342,7 +360,7 @@ export class TrackStateService {
     });
   }
 
-  public setDurationDenominator(
+  public setStepDurationDenominator(
     trackId: number,
     step: number,
     durationDenominator: number,
@@ -369,6 +387,34 @@ export class TrackStateService {
               ),
             },
           }),
+        };
+      });
+    });
+  }
+
+  public setTrackSwing(trackId: number, swing: number): void {
+    this._trackUpdates$.next((tracks) => {
+      return this.updateTrack(tracks, trackId, (track) => {
+        return {
+          ...track,
+          swing: Math.max(
+            TrackStateService.MIN_SWING,
+            Math.min(swing, TrackStateService.MAX_SWING),
+          ),
+        };
+      });
+    });
+  }
+
+  public setTrackHumanize(trackId: number, humanize: number): void {
+    this._trackUpdates$.next((tracks) => {
+      return this.updateTrack(tracks, trackId, (track) => {
+        return {
+          ...track,
+          humanize: Math.max(
+            TrackStateService.MIN_HUMANIZE,
+            Math.min(humanize, TrackStateService.MAX_HUMANIZE),
+          ),
         };
       });
     });

@@ -1,45 +1,87 @@
 <div class="duration-selector" [style.--anchor]="'--anchor-' + uid">
-  <sl-button
-    class="duration-selector__button duration-selector__button--dialog"
-    size="small"
-    (click)="dialogRef.togglePopover()"
+  <sl-tooltip
+    [content]="('components.durationSelector.duration' | translate)()"
   >
-    {{ durationPreview() }}
-  </sl-button>
+    <sl-button
+      class="duration-selector__button duration-selector__button--dialog"
+      size="small"
+      (click)="dialogRef.togglePopover()"
+    >
+      {{ durationPreview() }}
+    </sl-button>
+  </sl-tooltip>
   <dialog #dialogRef class="duration-selector__dialog" popover>
     <div class="duration-selector__form">
-      <sl-input
-        #stepRef
-        class="duration-selector__step"
-        type="number"
-        [min]="minStep"
-        [value]="step()"
-        size="small"
-        (sl-change)="setStep($any(stepRef.value))"
-      ></sl-input>
-      <sl-input
-        #numeratorRef
-        class="duration-selector__numerator"
-        type="number"
-        [min]="minNumerator"
-        [max]="denominator() - 1"
-        [value]="numerator()"
-        size="small"
-        [disabled]="denominator() <= minDenominator"
-        (sl-change)="setNumerator($any(numeratorRef.value))"
-      ></sl-input>
-      <sl-select
-        #denominatorRef
-        class="duration-selector__denominator"
-        size="small"
-        [value]="'' + denominator()"
-        (sl-change)="setDenominator($any(denominatorRef.value))"
+      <sl-tooltip
+        [content]="
+          (
+            'components.durationSelector.step'
+            | translate
+              : {
+                  min: '' + minStep,
+                }
+          )()
+        "
       >
-        <sl-option [value]="minDenominator"></sl-option>
-        @for (denominator of denominators; track denominator) {
-          <sl-option [value]="denominator">{{ denominator }}</sl-option>
-        }
-      </sl-select>
+        <sl-input
+          #stepRef
+          class="duration-selector__step"
+          type="number"
+          [min]="minStep"
+          [value]="step()"
+          size="small"
+          (sl-change)="setStepDurationStep($any(stepRef.value))"
+        ></sl-input>
+      </sl-tooltip>
+      <sl-tooltip
+        [content]="
+          (
+            (denominator() <= minDenominator
+              ? 'components.durationSelector.numerator'
+              : 'components.durationSelector.numeratorMinMax'
+            )
+            | translate
+              : { min: '' + minNumerator, max: '' + (denominator() - 1) }
+          )()
+        "
+      >
+        <sl-input
+          #numeratorRef
+          class="duration-selector__numerator"
+          type="number"
+          [min]="minNumerator"
+          [max]="denominator() - 1"
+          [value]="numerator()"
+          size="small"
+          [disabled]="denominator() <= minDenominator"
+          (sl-change)="setStepDurationNumerator($any(numeratorRef.value))"
+        ></sl-input>
+      </sl-tooltip>
+      <sl-tooltip
+        [content]="
+          (
+            'components.durationSelector.denominator'
+            | translate
+              : {
+                  first: '' + denominators[0],
+                  last: '' + denominators[denominators.length - 1],
+                }
+          )()
+        "
+      >
+        <sl-select
+          #denominatorRef
+          class="duration-selector__denominator"
+          size="small"
+          [value]="'' + denominator()"
+          (sl-change)="setStepDurationDenominator($any(denominatorRef.value))"
+        >
+          <sl-option [value]="minDenominator"></sl-option>
+          @for (denominator of denominators; track denominator) {
+            <sl-option [value]="denominator">{{ denominator }}</sl-option>
+          }
+        </sl-select>
+      </sl-tooltip>
     </div>
   </dialog>
 </div>

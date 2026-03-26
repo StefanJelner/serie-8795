@@ -39,7 +39,7 @@ export class NoteSelectorComponent {
   private readonly _schedulerService: SchedulerService =
     inject(SchedulerService);
 
-  public setOctave(octave: string) {
+  public setStepOctave(octave: string) {
     const octaveInt = parseInt(octave);
 
     if (
@@ -50,14 +50,14 @@ export class NoteSelectorComponent {
       return;
     }
 
-    this._schedulerService.setOctave(
+    this._schedulerService.setStepOctave(
       this.trackNumber(),
       this.stepNumber(),
       octaveInt,
     );
   }
 
-  public setSemitone(semitone: string) {
+  public setStepSemitone(semitone: string) {
     const semitoneInt = parseInt(semitone);
 
     if (
@@ -68,14 +68,14 @@ export class NoteSelectorComponent {
       return;
     }
 
-    this._schedulerService.setSemitone(
+    this._schedulerService.setStepSemitone(
       this.trackNumber(),
       this.stepNumber(),
       semitoneInt,
     );
   }
 
-  public setVelocity(velocity: string) {
+  public setStepVelocity(velocity: string) {
     const velocityInt = parseInt(velocity);
 
     if (
@@ -86,7 +86,7 @@ export class NoteSelectorComponent {
       return;
     }
 
-    this._schedulerService.setVelocity(
+    this._schedulerService.setStepVelocity(
       this.trackNumber(),
       this.stepNumber(),
       velocityInt,

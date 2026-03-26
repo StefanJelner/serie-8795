@@ -126,52 +126,68 @@ export class SchedulerService {
     this._trackState.setTrackSteps(id, steps);
   }
 
-  public setRotation(id: number, rotation: Rotation): void {
-    this._trackState.setRotation(id, rotation);
+  public setTrackRotation(id: number, rotation: Rotation): void {
+    this._trackState.setTrackRotation(id, rotation);
   }
 
-  public setMidiChannel(id: number, channel: number): void {
-    this._trackState.setMidiChannel(id, channel);
+  public setTrackMidiChannel(id: number, channel: number): void {
+    this._trackState.setTrackMidiChannel(id, channel);
   }
 
-  public setOctave(track: number, step: number, octave: number | null): void {
-    this._trackState.setOctave(track, step, octave);
+  public setStepOctave(
+    track: number,
+    step: number,
+    octave: number | null,
+  ): void {
+    this._trackState.setStepOctave(track, step, octave);
   }
 
-  public setSemitone(
+  public setStepSemitone(
     track: number,
     step: number,
     semitone: number | null,
   ): void {
-    this._trackState.setSemitone(track, step, semitone);
+    this._trackState.setStepSemitone(track, step, semitone);
   }
 
-  public setVelocity(track: number, step: number, velocity: number): void {
-    this._trackState.setVelocity(track, step, velocity);
+  public setStepVelocity(track: number, step: number, velocity: number): void {
+    this._trackState.setStepVelocity(track, step, velocity);
   }
 
-  public setDurationStep(
+  public setStepDurationStep(
     track: number,
     step: number,
     durationStep: number,
   ): void {
-    this._trackState.setDurationStep(track, step, durationStep);
+    this._trackState.setStepDurationStep(track, step, durationStep);
   }
 
-  public setDurationNumerator(
+  public setStepDurationNumerator(
     track: number,
     step: number,
     durationNumerator: number,
   ): void {
-    this._trackState.setDurationNumerator(track, step, durationNumerator);
+    this._trackState.setStepDurationNumerator(track, step, durationNumerator);
   }
 
-  public setDurationDenominator(
+  public setStepDurationDenominator(
     track: number,
     step: number,
     durationDenominator: number,
   ): void {
-    this._trackState.setDurationDenominator(track, step, durationDenominator);
+    this._trackState.setStepDurationDenominator(
+      track,
+      step,
+      durationDenominator,
+    );
+  }
+
+  public setTrackSwing(track: number, swing: number): void {
+    this._trackState.setTrackSwing(track, swing);
+  }
+
+  public setTrackHumanize(track: number, humanize: number): void {
+    this._trackState.setTrackHumanize(track, humanize);
   }
 
   public play(): void {

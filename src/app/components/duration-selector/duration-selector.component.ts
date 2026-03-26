@@ -53,21 +53,21 @@ export class DurationSelectorComponent {
   private readonly _schedulerService: SchedulerService =
     inject(SchedulerService);
 
-  public setStep(step: string): void {
+  public setStepDurationStep(step: string): void {
     const stepInt = parseInt(step);
 
     if (isNaN(stepInt) || stepInt < this.minStep) {
       return;
     }
 
-    this._schedulerService.setDurationStep(
+    this._schedulerService.setStepDurationStep(
       this.trackNumber(),
       this.stepNumber(),
       stepInt,
     );
   }
 
-  public setNumerator(numerator: string): void {
+  public setStepDurationNumerator(numerator: string): void {
     const numeratorInt = parseInt(numerator);
 
     if (
@@ -78,21 +78,21 @@ export class DurationSelectorComponent {
       return;
     }
 
-    this._schedulerService.setDurationNumerator(
+    this._schedulerService.setStepDurationNumerator(
       this.trackNumber(),
       this.stepNumber(),
       numeratorInt,
     );
   }
 
-  public setDenominator(denominator: string): void {
+  public setStepDurationDenominator(denominator: string): void {
     const denominatorInt = parseInt(denominator);
 
     if (isNaN(denominatorInt) || !this.denominators.includes(denominatorInt)) {
       return;
     }
 
-    this._schedulerService.setDurationDenominator(
+    this._schedulerService.setStepDurationDenominator(
       this.trackNumber(),
       this.stepNumber(),
       denominatorInt,

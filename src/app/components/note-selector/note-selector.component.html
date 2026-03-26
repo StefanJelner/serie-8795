@@ -1,40 +1,69 @@
 <div class="note-selector">
-  <sl-select
-    #octaveRef
-    class="note-selector__octave"
-    [value]="octave() ?? ''"
-    size="small"
-    (sl-change)="setOctave($any(octaveRef.value))"
+  <sl-tooltip
+    [content]="
+      (
+        'components.noteSelector.octave'
+        | translate
+          : { first: '' + octaves[0], last: '' + octaves[octaves.length - 1] }
+      )()
+    "
   >
-    <sl-option value=""></sl-option>
-    @for (o of octaves; track o) {
-      <sl-option [value]="o">{{ o }}</sl-option>
-    }
-  </sl-select>
-  <sl-select
-    #semitoneRef
-    class="note-selector__semitone"
-    [value]="semitone() ?? ''"
-    size="small"
-    (sl-change)="setSemitone($any(semitoneRef.value))"
+    <sl-select
+      #octaveRef
+      class="note-selector__octave"
+      [value]="octave() ?? ''"
+      size="small"
+      (sl-change)="setStepOctave($any(octaveRef.value))"
+    >
+      <sl-option value=""></sl-option>
+      @for (o of octaves; track o) {
+        <sl-option [value]="o">{{ o }}</sl-option>
+      }
+    </sl-select>
+  </sl-tooltip>
+  <sl-tooltip
+    [content]="
+      (
+        'components.noteSelector.semitone'
+        | translate
+          : { first: semitones[0], last: semitones[semitones.length - 1] }
+      )()
+    "
   >
-    <sl-option value=""></sl-option>
-    @for (s of semitones; let i = $index; track i) {
-      <sl-option [value]="i" [disabled]="octave() | maxSemitone: i">{{
-        s
-      }}</sl-option>
-    }
-  </sl-select>
-  <sl-input
-    #velocityRef
-    class="note-selector__velocity"
-    type="number"
-    size="small"
-    [value]="velocity()"
-    [min]="minVelocity"
-    [max]="maxVelocity"
-    (sl-change)="setVelocity($any(velocityRef.value))"
-  ></sl-input>
+    <sl-select
+      #semitoneRef
+      class="note-selector__semitone"
+      [value]="semitone() ?? ''"
+      size="small"
+      (sl-change)="setStepSemitone($any(semitoneRef.value))"
+    >
+      <sl-option value=""></sl-option>
+      @for (s of semitones; let i = $index; track i) {
+        <sl-option [value]="i" [disabled]="octave() | maxSemitone: i">{{
+          s
+        }}</sl-option>
+      }
+    </sl-select>
+  </sl-tooltip>
+  <sl-tooltip
+    [content]="
+      (
+        'components.noteSelector.velocity'
+        | translate: { min: '' + minVelocity, max: '' + maxVelocity }
+      )()
+    "
+  >
+    <sl-input
+      #velocityRef
+      class="note-selector__velocity"
+      type="number"
+      size="small"
+      [value]="velocity()"
+      [min]="minVelocity"
+      [max]="maxVelocity"
+      (sl-change)="setStepVelocity($any(velocityRef.value))"
+    ></sl-input>
+  </sl-tooltip>
   <app-duration-selector
     class="note-selector__duration"
     [trackNumber]="trackNumber()"

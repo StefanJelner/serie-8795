@@ -5,20 +5,33 @@
         "barsSelector": {
           "label": "Bars"
         },
+        "durationSelector": {
+          "denominator": "Denominator ({{first}} - {{last}})",
+          "duration": "Duration",
+          "numerator": "Numerator",
+          "numeratorMinMax": "Numerator ({{min}} - {{max}})",
+          "step": "Step (min: {{min}})"
+        },
+        "noteSelector": {
+          "octave": "Octave ({{first}} - {{last}})",
+          "semitone": "Semitone ({{first}} - {{last}})",
+          "velocity": "Velocity ({{min}} - {{max}})"
+        },
         "track": {
           "active": "Active",
+          "humanize": "Humanize ({{min}}ms - {{max}}ms)",
           "mute": "Mute",
           "solo": "Solo",
-          "steps": {
-            "label": "Steps (Octave, Semitone, Velocity, Duration, Aftertouch)"
-          }
+          "swing": "Swing ({{min}}ms - {{max}}ms)"
         },
         "transportToolbar": {
           "dialog": {
             "close": "Close",
             "content": "How many minutes and seconds do you want to export and download?",
             "download": "Download",
-            "label": "Download"
+            "label": "Download",
+            "minutes": "Minutes",
+            "seconds": "Seconds"
           },
           "download": "Download",
           "pause": "Pause",
@@ -50,20 +63,33 @@
         "barsSelector": {
           "label": "Takt"
         },
+        "durationSelector": {
+          "denominator": "Nenner ({{first}} - {{last}})",
+          "duration": "Dauer",
+          "numerator": "Zähler",
+          "numeratorMinMax": "Zähler ({{min}} - {{max}})",
+          "step": "Schritt (min: {{min}})"
+        },
+        "noteSelector": {
+          "octave": "Oktave ({{first}} - {{last}})",
+          "semitone": "Halbton ({{first}} - {{last}})",
+          "velocity": "Anschlagstärke ({{min}} - {{max}})"
+        },
         "track": {
           "active": "Aktiv",
+          "humanize": "Humanisieren ({{min}}ms - {{max}}ms)",
           "mute": "Stumm",
           "solo": "Solo",
-          "steps": {
-            "label": "Schritte (Oktave, Halbton, Anschlagstärke, Dauer, Aftertouch)"
-          }
+          "swing": "Swing ({{min}}ms - {{max}}ms)"
         },
         "transportToolbar": {
           "dialog": {
             "close": "Schließen",
             "content": "Wie viele Minuten und Sekunden möchten Sie exportieren und herunterladen?",
             "download": "Herunterladen",
-            "label": "Herunterladen"
+            "label": "Herunterladen",
+            "minutes": "Minuten",
+            "seconds": "Sekunden"
           },
           "download": "Herunterladen",
           "pause": "Pause",
